@@ -9,8 +9,7 @@ import java.util.Scanner;
 
 public class Main {
     static void BellmanFord(List<Edge> graph, int V, int E,
-                            int src, int dest)
-    {
+                            int src, int dest) throws Exception {
         // Initialize distance of all vertices as infinite.
         int[] distanceTo = new int[V];
         for (int i = 0; i < V; i++)
@@ -19,17 +18,18 @@ public class Main {
         // initialize distance of source as 0
         distanceTo[src] = 0;
 
-        List<Integer> path = new ArrayList<>(); // shortest path to dest
-        path.add(src);
+        int[] paths = new int[V];//[]; // shortest path to dest
+        paths[0] = 0;//= new int[]{src};
         // Relax all edges |V| - 1 times. A simple
         // shortest path from src to any other
         // vertex can have at-most |V| - 1 edges
-        for (int i = 0; i < V - 1; i++)
+        for (int i = 0; i < V - 1; i++) // for each vertex..
         {
-            for (int j = 0; j < E; j++)
+            for (int j = 0; j < E; j++) // for each edge
             {
                 if (distanceTo[graph.get(j).src] + graph.get(j).weight < distanceTo[graph.get(j).dest]) {
                     distanceTo[graph.get(j).dest] =  distanceTo[graph.get(j).src] + graph.get(j).weight;
+                    paths[graph.get(j).dest] = graph.get(j).src;
                 }
             }
         }
@@ -45,15 +45,27 @@ public class Main {
             int y = graph.get(i).dest;
             int weight = graph.get(i).weight;
             if (distanceTo[x] != Integer.MAX_VALUE &&
-                    distanceTo[x] + weight < distanceTo[y])
+                    distanceTo[x] + weight < distanceTo[y]) {
                 System.out.println("Graph contains negative"
-                        +" weight cycle");
+                        + " weight cycle");
+                throw new Exception("Negative weight cycle");
+            }
         }
 
         System.out.println("Vertex Distance from Source");
         for (int i = 0; i < V; i++)
             System.out.println(i + "\t\t" + distanceTo[i]);
-        System.out.println(path.toString());
+
+        System.out.println("Shortest path to destination:");
+        System.out.print(dest+1);
+
+        int prev = paths[dest];
+        while(true) {
+            System.out.print(" <- ");
+            System.out.print(prev + 1);
+            if(prev == src) break;
+            prev = paths[prev];
+        }
     }
 
 
@@ -67,8 +79,8 @@ public class Main {
 
         int V = inSc.nextInt(); // вершины
         int E = inSc.nextInt(); // связи
-        int src = inSc.nextInt();
-        int dest = inSc.nextInt();
+        int src = inSc.nextInt() - 1;
+        int dest = inSc.nextInt() - 1;
         // Every edge has three values (u, v, w) where
         // the edge is from vertex u to v. And weight
         // of the edge is w.
@@ -94,10 +106,12 @@ public class Main {
                 { 1, 2, 3 }, { 1, 3, 2 },
                 { 1, 4, 2 }, { 3, 2, 5 },
                 { 3, 1, 1 }, { 4, 3, -3 } }; */
-
+    try {
         BellmanFord(graph, V, E, src, dest);
+    }
+    catch(Exception e) {
 
-
+    }
     }
 }
 
