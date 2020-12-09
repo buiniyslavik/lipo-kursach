@@ -3,13 +3,16 @@ package com.company;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Stack;
 
 public class Main {
-    static void BellmanFord(List<Edge> graph, int V, int E,
-                            int src, int dest) throws Exception {
+    static String BellmanFord(List<Edge> graph, int V, int E,
+                            int src, int dest) {
         // Initialize distance of all vertices as infinite.
         int[] distanceTo = new int[V];
         for (int i = 0; i < V; i++)
@@ -46,31 +49,31 @@ public class Main {
             int weight = graph.get(i).weight;
             if (distanceTo[x] != Integer.MAX_VALUE &&
                     distanceTo[x] + weight < distanceTo[y]) {
-                System.out.println("Graph contains negative"
-                        + " weight cycle");
-                throw new Exception("Negative weight cycle");
+                return "-1";
+
             }
         }
+        StringBuilder outp = new StringBuilder(Integer.toString(distanceTo[dest]) + '\n'); // distance from src to dest
 
-        System.out.println("Vertex Distance from Source");
-        for (int i = 0; i < V; i++)
-            System.out.println(i + "\t\t" + distanceTo[i]);
-
-        System.out.println("Shortest path to destination:");
-        System.out.print(dest+1);
+        Stack<String> shortestPath = new Stack<>();
+        shortestPath.push(Integer.toString(dest+1));
 
         int prev = paths[dest];
         while(true) {
-            System.out.print(" <- ");
-            System.out.print(prev + 1);
+            shortestPath.push(Integer.toString(prev+1));
             if(prev == src) break;
             prev = paths[prev];
         }
+        while(!shortestPath.isEmpty()) {
+            outp.append(shortestPath.pop()).append(' ');
+        }
+        outp.append('\n');
+        return outp.toString();
     }
 
 
     // Driver code
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
         File file = new File("input.txt");
         Scanner inSc = new Scanner(file);
 
@@ -102,16 +105,10 @@ public class Main {
                 }
             }
         }
-       /* int[][] graph = { { 0, 1, -1 }, { 0, 2, 4 },
-                { 1, 2, 3 }, { 1, 3, 2 },
-                { 1, 4, 2 }, { 3, 2, 5 },
-                { 3, 1, 1 }, { 4, 3, -3 } }; */
-    try {
-        BellmanFord(graph, V, E, src, dest);
-    }
-    catch(Exception e) {
-
-    }
+        String output = BellmanFord(graph, V, E, src, dest);
+        FileWriter outFile = new FileWriter("output.txt");
+        outFile.write(output);
+        outFile.close();
     }
 }
 
