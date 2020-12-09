@@ -1,5 +1,6 @@
 package com.company;
 
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -7,7 +8,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    static void BellmanFord(int[][] graph, int V, int E,
+    static void BellmanFord(List<Edge> graph, int V, int E,
                             int src, int dest)
     {
         // Initialize distance of all vertices as infinite.
@@ -27,9 +28,8 @@ public class Main {
         {
             for (int j = 0; j < E; j++)
             {
-                //  d to    src           weight     d to  dest
-                if (distanceTo[graph[j][0]] + graph[j][2] < distanceTo[graph[j][1]]) {
-                    distanceTo[graph[j][1]] =  distanceTo[graph[j][0]] + graph[j][2];
+                if (distanceTo[graph.get(j).src] + graph.get(j).weight < distanceTo[graph.get(j).dest]) {
+                    distanceTo[graph.get(j).dest] =  distanceTo[graph.get(j).src] + graph.get(j).weight;
                 }
             }
         }
@@ -41,9 +41,9 @@ public class Main {
         // shorter path, then there is a cycle.
         for (int i = 0; i < E; i++)
         {
-            int x = graph[i][0];
-            int y = graph[i][1];
-            int weight = graph[i][2];
+            int x = graph.get(i).src;
+            int y = graph.get(i).dest;
+            int weight = graph.get(i).weight;
             if (distanceTo[x] != Integer.MAX_VALUE &&
                     distanceTo[x] + weight < distanceTo[y])
                 System.out.println("Graph contains negative"
@@ -55,6 +55,7 @@ public class Main {
             System.out.println(i + "\t\t" + distanceTo[i]);
         System.out.println(path.toString());
     }
+
 
     // Driver code
     public static void main(String[] args) throws FileNotFoundException {
@@ -73,7 +74,8 @@ public class Main {
         // of the edge is w.
 
 
-        int[][] graph = new int[E][];
+        //int[][] graph = new int[E][];
+        List<Edge> graph = new ArrayList<>();
         int edgeCount = 0;
         for(int i = 0; i < V; i++) {
             for(int j = 0; j < V; j++) {
@@ -82,7 +84,8 @@ public class Main {
                     int from = i;
                     int to = j;
                     int weight = currElem;
-                    graph[edgeCount] = new int[]{from, to, weight};
+                    //graph[edgeCount] = new int[]{from, to, weight};
+                    graph.add(new Edge(from, to, weight));
                     edgeCount++;
                 }
             }
